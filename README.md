@@ -98,7 +98,7 @@ The results will be in the output_dir folder and it consists of
 4. 'eval_results.txt': RP80, accuracy, loss
 
 ## Preprocessing
-We provide [script](./preprocessing.py) for preprocessing clinical notes and merge notes with admission information on MIMIC-III. 
+We provide [script](./preprocess.py) for preprocessing clinical notes and merge notes with admission information on MIMIC-III. 
 
 ## Notebooks
 
