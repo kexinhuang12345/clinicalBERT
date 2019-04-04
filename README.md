@@ -98,11 +98,13 @@ The results will be in the output_dir folder and it consists of
 4. 'eval_results.txt': RP80, accuracy, loss
 
 ## Preprocessing
-We provide [script]() for preprocessing clinical notes and merge notes with admission information on MIMIC-III. 
+We provide [script](./preprocessing.py) for preprocessing clinical notes and merge notes with admission information on MIMIC-III. 
 
 ## Notebooks
 
-1. [Attention](): this notebook is a tutorial to visualize self-attention.
+1. [Attention](
+        ./notebook/attention_visualization.ipynb
+      ): this notebook is a tutorial to visualize self-attention.
 
 ## Gensim Word2Vec and FastText models
 
