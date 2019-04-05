@@ -37,13 +37,13 @@ The following scripts presume a model folder that has following structure:
 -model
 	-discharge_readmission
 		-bert_config.json
-		-pytroch_model.bin
+		-pytorch_model.bin
 	-early_readmission
 		-bert_config.json
-		-pytroch_model.bin
+		-pytorch_model.bin
 	-pretraining
 		-bert_config.json
-		-pytroch_model.bin
+		-pytorch_model.bin
 		-vocab.txt
 
 ```
@@ -116,11 +116,10 @@ To use, simply
 import gensim
 word2vec = gensim.models.KeyedVectors.load('word2vec.model')
 weights = (m[m.wv.vocab])
-
 ```
 
 ## Contact
-Please contact cosamhkx@gmail.com for help or submit an issue. 
+Please contact kh2383@nyu.edu for help or submit an issue. 
 
 ## Citation
 
