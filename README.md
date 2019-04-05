@@ -30,7 +30,7 @@ Data file is expected to have column "TEXT", "ID" and "Label" (Note chunks, Admi
 
 ## ClinicalBERT Weights
 
-Use [this link]() to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
+Use [this link](https://drive.google.com/open?id=1t8L9w-r88Q5-sfC993x2Tjt1pu--A900) to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
 
 The following scripts presume a model folder that has following structure:
 ```
