@@ -123,13 +123,13 @@ Please contact kh2383@nyu.edu for help or submit an issue.
 
 ## Citation
 
-Please cite [Arxiv]():
+Please cite [arxiv](https://arxiv.org/abs/1904.05342):
 ```
 @article{clinicalbert,
-	author = {Kexin Huang and Jaan Altosaar and Rajesh Ranganath},
-	title = {ClinicalBERT: Modeling Clinical Notes and Predicting Hospital Readmission},
-	year = {2019},
-	journal = {arXiv:1904.05342},
+author = {Kexin Huang and Jaan Altosaar and Rajesh Ranganath},
+title = {ClinicalBERT: Modeling Clinical Notes and Predicting Hospital Readmission},
+year = {2019},
+journal = {arXiv:1904.05342},
 }
 
 ```
