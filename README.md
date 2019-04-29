@@ -30,20 +30,20 @@ Data file is expected to have column "TEXT", "ID" and "Label" (Note chunks, Admi
 
 ## ClinicalBERT Weights
 
-Use [this link]() to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
+Use [this link](https://drive.google.com/open?id=1t8L9w-r88Q5-sfC993x2Tjt1pu--A900) to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
 
 The following scripts presume a model folder that has following structure:
 ```
 -model
 	-discharge_readmission
 		-bert_config.json
-		-pytroch_model.bin
+		-pytorch_model.bin
 	-early_readmission
 		-bert_config.json
-		-pytroch_model.bin
+		-pytorch_model.bin
 	-pretraining
 		-bert_config.json
-		-pytroch_model.bin
+		-pytorch_model.bin
 		-vocab.txt
 
 ```
@@ -98,11 +98,13 @@ The results will be in the output_dir folder and it consists of
 4. 'eval_results.txt': RP80, accuracy, loss
 
 ## Preprocessing
-We provide [script]() for preprocessing clinical notes and merge notes with admission information on MIMIC-III. 
+We provide [script](./preprocess.py) for preprocessing clinical notes and merge notes with admission information on MIMIC-III. 
 
 ## Notebooks
 
-1. [Attention](): this notebook is a tutorial to visualize self-attention.
+1. [Attention](
+        ./notebook/attention_visualization.ipynb
+      ): this notebook is a tutorial to visualize self-attention.
 
 ## Gensim Word2Vec and FastText models
 
@@ -114,17 +116,21 @@ To use, simply
 import gensim
 word2vec = gensim.models.KeyedVectors.load('word2vec.model')
 weights = (m[m.wv.vocab])
-
 ```
 
 ## Contact
-Please contact cosamhkx@gmail.com for help or submit an issue. 
+Please contact kh2383@nyu.edu for help or submit an issue. 
 
 ## Citation
 
-Please cite [Arxiv]():
+Please cite [arxiv](https://arxiv.org/abs/1904.05342):
 ```
-
+@article{clinicalbert,
+author = {Kexin Huang and Jaan Altosaar and Rajesh Ranganath},
+title = {ClinicalBERT: Modeling Clinical Notes and Predicting Hospital Readmission},
+year = {2019},
+journal = {arXiv:1904.05342},
+}
 
 ```
 
