@@ -20,10 +20,12 @@ File system expected:
 		-train.csv
 		-val.csv
 		-test.csv
-	-early
+	-3days
 		-train.csv
 		-val.csv
 		-test.csv
+  -2days
+    -test.csv
 ```
 Data file is expected to have column "TEXT", "ID" and "Label" (Note chunks, Admission ID, Label of readmission).
 
@@ -45,7 +47,6 @@ The following scripts presume a model folder that has following structure:
 		-bert_config.json
 		-pytorch_model.bin
 		-vocab.txt
-
 ```
 
 ## Hospital Readmission using ClinicalBERT

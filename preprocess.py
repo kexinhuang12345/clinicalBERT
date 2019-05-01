@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-df_adm = pd.read_csv('PATH TO ADMISSION FILE')
+df_adm = pd.read_csv('/Users/KexinHuang/Downloads/ADMISSIONS.csv')
 df_adm.ADMITTIME = pd.to_datetime(df_adm.ADMITTIME, format = '%Y-%m-%d %H:%M:%S', errors = 'coerce')
 df_adm.DISCHTIME = pd.to_datetime(df_adm.DISCHTIME, format = '%Y-%m-%d %H:%M:%S', errors = 'coerce')
 df_adm.DEATHTIME = pd.to_datetime(df_adm.DEATHTIME, format = '%Y-%m-%d %H:%M:%S', errors = 'coerce')
@@ -22,56 +22,55 @@ df_adm = df_adm.sort_values(['SUBJECT_ID','ADMITTIME'])
 #When we filter out the "ELECTIVE", we need to correct the next admit time for these admissions since there might be 'emergency' next admit after "ELECTIVE"
 df_adm[['NEXT_ADMITTIME','NEXT_ADMISSION_TYPE']] = df_adm.groupby(['SUBJECT_ID'])[['NEXT_ADMITTIME','NEXT_ADMISSION_TYPE']].fillna(method = 'bfill')
 df_adm['DAYS_NEXT_ADMIT']=  (df_adm.NEXT_ADMITTIME - df_adm.DISCHTIME).dt.total_seconds()/(24*60*60)
+df_adm['OUTPUT_LABEL'] = (df_adm.DAYS_NEXT_ADMIT < 30).astype('int')
+### filter out newborn and death
+df_adm = df_adm[df_adm['ADMISSION_TYPE']!='NEWBORN']
+df_adm = df_adm[df_adm.DEATHTIME.isnull()]
+df_adm['DURATION'] = (df_adm['DISCHTIME']-df_adm['ADMITTIME']).dt.total_seconds()/(24*60*60)
 
-df_notes = pd.read_csv('PATH TO NOTES FILE')
+df_notes = pd.read_csv('/Users/KexinHuang/Downloads/NOTEEVENTS.csv')
 df_notes = df_notes.sort_values(by=['SUBJECT_ID','HADM_ID','CHARTDATE'])
-df_adm_notes = pd.merge(df_adm[['SUBJECT_ID','HADM_ID','ADMITTIME','DISCHTIME','DAYS_NEXT_ADMIT','NEXT_ADMITTIME','ADMISSION_TYPE','DEATHTIME']],
-                        df_notes[['SUBJECT_ID','HADM_ID','CHARTDATE','TEXT']], 
+df_adm_notes = pd.merge(df_adm[['SUBJECT_ID','HADM_ID','ADMITTIME','DISCHTIME','DAYS_NEXT_ADMIT','NEXT_ADMITTIME','ADMISSION_TYPE','DEATHTIME','OUTPUT_LABEL','DURATION']],
+                        df_notes[['SUBJECT_ID','HADM_ID','CHARTDATE','TEXT','CATEGORY']], 
                         on = ['SUBJECT_ID','HADM_ID'],
                         how = 'left')
 
 df_adm_notes.ADMITTIME_C = df_adm_notes.ADMITTIME.apply(lambda x: str(x).split(' ')[0])
 df_adm_notes['ADMITTIME_C'] = pd.to_datetime(df_adm_notes.ADMITTIME_C, format = '%Y-%m-%d', errors = 'coerce')
 df_adm_notes['CHARTDATE'] = pd.to_datetime(df_adm_notes.CHARTDATE, format = '%Y-%m-%d', errors = 'coerce')
-df_adm_notes['DURATION'] = (df_adm_notes['DISCHTIME']-df_adm_notes['ADMITTIME']).dt.total_seconds()/(24*60*60)
 
 ### If Discharge Summary 
 df_discharge = df_adm_notes[df_adm_notes['CATEGORY'] == 'Discharge summary']
-df_discharge['OUTPUT_LABEL'] = (df_discharge.DAYS_NEXT_ADMIT < 30).astype('int')
-
+# multiple discharge summary for one admission -> after examination -> replicated summary -> replace with the last one 
+df_discharge = (df_discharge.groupby(['SUBJECT_ID','HADM_ID']).nth(-1)).reset_index()
+df_discharge=df_discharge[df_discharge['TEXT'].notnull()]
 
 ### If Less than n days on admission notes (Early notes)
 def less_n_days_data (df_adm_notes, n):
-
+    
     df_less_n = df_adm_notes[((df_adm_notes['CHARTDATE']-df_adm_notes['ADMITTIME_C']).dt.total_seconds()/(24*60*60))<n]
     df_less_n=df_less_n[df_less_n['TEXT'].notnull()]
-    df_less_n['OUTPUT_LABEL'] = (df_less_n.DAYS_NEXT_ADMIT < 30).astype('int')
+    #concatenate first
+    df_concat = pd.DataFrame(df_less_n.groupby('HADM_ID')['TEXT'].apply(lambda x: "%s" % ' '.join(x))).reset_index()
+    df_concat['OUTPUT_LABEL'] = df_concat['HADM_ID'].apply(lambda x: df_less_n[df_less_n['HADM_ID']==x].OUTPUT_LABEL.values[0])
 
-    return df_less_n
-
+    return df_concat
 
 df_less_2 = less_n_days_data(df_adm_notes, 2)
 df_less_3 = less_n_days_data(df_adm_notes, 3)
- 
-# Notes preprocessing for early notes and filter newborn and death
 
 import re
-    def preprocess1(x):
-        y=re.sub('\\[(.*?)\\]','',x) #remove de-identified brackets
-        y=re.sub('[0-9]+\.','',y) #remove 1.2. since the segmenter segments based on this
-        y=re.sub('dr\.','doctor',y)
-        y=re.sub('m\.d\.','md',y)
-        y=re.sub('admission date:','',y)
-        y=re.sub('discharge date:','',y)
-        y=re.sub('--|__|==','',y)
-        return y
+def preprocess1(x):
+    y=re.sub('\\[(.*?)\\]','',x) #remove de-identified brackets
+    y=re.sub('[0-9]+\.','',y) #remove 1.2. since the segmenter segments based on this
+    y=re.sub('dr\.','doctor',y)
+    y=re.sub('m\.d\.','md',y)
+    y=re.sub('admission date:','',y)
+    y=re.sub('discharge date:','',y)
+    y=re.sub('--|__|==','',y)
+    return y
 
 def preprocessing(df_less_n): 
-
-    ### filter out newborn and death
-    df_less_n = df_less_n[df_less_n['ADMISSION_TYPE']!='NEWBORN']
-    df_less_n = df_less_n[df_less_n.DEATHTIME.isnull()]
-
     df_less_n['TEXT']=df_less_n['TEXT'].fillna(' ')
     df_less_n['TEXT']=df_less_n['TEXT'].str.replace('\n',' ')
     df_less_n['TEXT']=df_less_n['TEXT'].str.replace('\r',' ')
@@ -79,39 +78,32 @@ def preprocessing(df_less_n):
     df_less_n['TEXT']=df_less_n['TEXT'].str.lower()
 
     df_less_n['TEXT']=df_less_n['TEXT'].apply(lambda x: preprocess1(x))
-    df_less_n['TEXT_len']=df_less_n['TEXT'].apply(lambda x: len(x.split()))
 
     #to get 318 words chunks for readmission tasks
     from tqdm import tqdm
     df_len = len(df_less_n)
     want=pd.DataFrame({'ID':[],'TEXT':[],'Label':[]})
-    for i in (range(df_len)):
+    for i in tqdm(range(df_len)):
         x=df_less_n.TEXT.iloc[i].split()
         n=int(len(x)/318)
         for j in range(n):
-            want=want.append({'TEXT':' '.join(x[j*318:(j+1)*318]),'Label':df_less_n.Label.iloc[i],'ID':df_less_n.HADM_ID.iloc[i]},ignore_index=True)
+            want=want.append({'TEXT':' '.join(x[j*318:(j+1)*318]),'Label':df_less_n.OUTPUT_LABEL.iloc[i],'ID':df_less_n.HADM_ID.iloc[i]},ignore_index=True)
         if len(x)%318>10:
-            want=want.append({'TEXT':' '.join(x[-(len(x)%318):]),'Label':df_less_n.Label.iloc[i],'ID':df_less_n.HADM_ID.iloc[i]},ignore_index=True)
-        if i%1000 == 0:
-            print (f'iteration {i}/{df_len}')
+            want=want.append({'TEXT':' '.join(x[-(len(x)%318):]),'Label':df_less_n.OUTPUT_LABEL.iloc[i],'ID':df_less_n.HADM_ID.iloc[i]},ignore_index=True)
+    
+    return want
 
-    return df_less_n
-        
-df_less_2 = preprocessing(df_less_2)
-df_less_2.to_csv('less_2_days_notes.csv')
-df_less_3 = preprocessing(df_less_3)
-df_less_3.to_csv('less_3_days_notes.csv')
 df_discharge = preprocessing(df_discharge)
-df_discharge.to_csv('discharge.csv')
-
+df_less_2 = preprocessing(df_less_2)
+df_less_3 = preprocessing(df_less_3)
 
 ### An example to get the train/test/split with random state:
 ### note that we divide on patient admission level and share among experiments, instead of notes level. 
 ### This way, since our methods run on the same set of admissions, we can see the
 ### progression of readmission scores. 
 
-readmit_ID = pd.Index(df_adm[df_adm.OUTPUT_LABEL == 1].HADM_ID)
-not_readmit_ID = pd.Index(df_adm[df_adm.OUTPUT_LABEL == 0].HADM_ID)
+readmit_ID = df_adm[df_adm.OUTPUT_LABEL == 1].HADM_ID
+not_readmit_ID = df_adm[df_adm.OUTPUT_LABEL == 0].HADM_ID
 #subsampling to get the balanced pos/neg numbers of patients for each dataset
 not_readmit_ID_use = not_readmit_ID.sample(n=len(readmit_ID), random_state=1)
 id_val_test_t=readmit_ID.sample(frac=0.2,random_state=1)
@@ -164,9 +156,9 @@ discharge_train_snippets = discharge_train_snippets.sample(frac=1, random_state=
 #check if balanced
 discharge_train_snippets.Label.value_counts()
 
-discharge_train_snippets.to_csv('./discharge/train_snippets.csv')
-discharge_val.to_csv('./discharge/val_snippets.csv')
-discharge_test.to_csv('./discharge/test_snippets.csv')
+discharge_train_snippets.to_csv('./discharge/train.csv')
+discharge_val.to_csv('./discharge/val.csv')
+discharge_test.to_csv('./discharge/test.csv')
 
 ### for Early notes experiment: we only need to find training set for 3 days, then we can test 
 ### both 3 days and 2 days. Since we split the data on patient level and experiments share admissions
@@ -181,10 +173,10 @@ not_readmit_ID_more = df.sample(n=500, random_state=1)
 early_train_snippets = pd.concat([df_less_3[df_less_3.ID.isin(not_readmit_ID_more)], early_train])
 #shuffle
 early_train_snippets = early_train_snippets.sample(frac=1, random_state=1).reset_index(drop=True)
-early_train_snippets.to_csv('./3days/train_snippets.csv')
+early_train_snippets.to_csv('./3days/train.csv')
 
 early_val = df_less_3[df_less_3.ID.isin(val_id_label.id)]
-early_val.to_csv('./3days/val_snippets.csv')
+early_val.to_csv('./3days/val.csv')
 
 # we want to test on admissions that are not discharged already. So for less than 3 days of notes experiment,
 # we filter out admissions discharged within 3 days
@@ -192,14 +184,14 @@ actionable_ID_3days = df_adm[df_adm['DURATION'] >= 3].HADM_ID
 test_actionable_id_label = test_id_label[test_id_label.id.isin(actionable_ID_3days)]
 early_test = df_less_3[df_less_3.ID.isin(test_actionable_id_label.id)]
 
-early_test.to_csv('./3days/test_snippets.csv')
+early_test.to_csv('./3days/test.csv')
 
 #for 2 days notes, we only obtain test set. Since the model parameters are tuned on the val set of 3 days
 
-actionable_ID_2days = df_adm[df_adm['STAY_DAYS'] >= 2].HADM_ID
+actionable_ID_2days = df_adm[df_adm['DURATION'] >= 2].HADM_ID
 
 test_actionable_id_label_2days = test_id_label[test_id_label.id.isin(actionable_ID_2days)]
 
 early_test_2days = df_less_2[df_less_2.ID.isin(test_actionable_id_label_2days.id)]
 
-early_test_2days.to_csv('./2days/test_snippets.csv')
+early_test_2days.to_csv('./2days/test.csv')
