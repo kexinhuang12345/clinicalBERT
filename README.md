@@ -16,14 +16,14 @@ File system expected:
 
 ```
 -data
-	-discharge
-		-train.csv
-		-val.csv
-		-test.csv
-	-3days
-		-train.csv
-		-val.csv
-		-test.csv
+  -discharge
+    -train.csv
+    -val.csv
+    -test.csv
+  -3days
+    -train.csv
+    -val.csv
+    -test.csv
   -2days
     -test.csv
 ```
@@ -59,7 +59,7 @@ python ./run_readmission.py \
   --task_name readmission \
   --readmission_mode early \
   --do_eval \
-  --data_dir ./data/early/ \
+  --data_dir ./data/3days(2days)/ \
   --bert_model ./model/early_readmission \
   --max_seq_length 512 \
   --output_dir ./result_early
