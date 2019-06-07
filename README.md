@@ -32,7 +32,7 @@ Data file is expected to have column "TEXT", "ID" and "Label" (Note chunks, Admi
 
 ## ClinicalBERT Weights
 
-Use [this link](https://drive.google.com/open?id=1t8L9w-r88Q5-sfC993x2Tjt1pu--A900) to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
+Use [this google link](https://drive.google.com/open?id=1t8L9w-r88Q5-sfC993x2Tjt1pu--A900) or [this oneDrive link](https://hu-my.sharepoint.com/:u:/g/personal/kexinhuang_hsph_harvard_edu/ERw4LamJD4xNkkONXI7jsiYBUk6QwDv4t3y_jJcrsjkt9A?e=orU3C3) for users in mainland China to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
 
 The following scripts presume a model folder that has following structure:
 ```
