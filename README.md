@@ -109,7 +109,7 @@ We provide [script](./preprocess.py) for preprocessing clinical notes and merge 
 
 ## Gensim Word2Vec and FastText models
 
-Please use [this link](https://drive.google.com/open?id=14EOqvvjJ8qUxihQ_SFnuRsjK9pOTrP-6) to download Word2Vec and FastText models for Clinical Notes.
+Please use [this link](https://hu-my.sharepoint.com/:u:/g/personal/kexinhuang_hsph_harvard_edu/EcdVZ46f9OZPnFlnFD3jXZgBayNW7T7SrA0lPRf6dlSOzQ?e=sPHF8B) to download Word2Vec and FastText models for Clinical Notes.
 
 To use, simply 
 
