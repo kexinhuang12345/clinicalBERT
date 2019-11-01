@@ -2,7 +2,7 @@
 
 This repo hosts pretraining and finetuning weights and relevant scripts for ClinicalBERT, a contextual representation for clinical notes. 
 
-### New: Clinical XLNet
+### New: Clinical XLNet and Pretraining Script
 1. clinical XLNet pretrained model is available at [here](https://github.com/kexinhuang12345/clinicalXLNet).
 
 2. Detailed Step Instructions for pretraining ClinicalBERT and Clinical XLNet from scratch are available [here](https://github.com/kexinhuang12345/clinicalBERT/blob/master/notebook/pretrain.ipynb)
