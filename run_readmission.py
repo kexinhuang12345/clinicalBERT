@@ -520,24 +520,25 @@ def main():
     elif n_gpu > 1:
         model = torch.nn.DataParallel(model)
 
-    # Prepare optimizer
-    if args.fp16:
-        param_optimizer = [(n, param.clone().detach().to('cpu').float().requires_grad_()) \
-                            for n, param in model.named_parameters()]
-    elif args.optimize_on_cpu:
-        param_optimizer = [(n, param.clone().detach().to('cpu').requires_grad_()) \
-                            for n, param in model.named_parameters()]
-    else:
-        param_optimizer = list(model.named_parameters())
-    no_decay = ['bias', 'gamma', 'beta']
-    optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.01},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.0}
-        ]
-    optimizer = BertAdam(optimizer_grouped_parameters,
-                         lr=args.learning_rate,
-                         warmup=args.warmup_proportion,
-                         t_total=num_train_steps)
+    if args.do_train:
+        # Prepare optimizer
+        if args.fp16:
+            param_optimizer = [(n, param.clone().detach().to('cpu').float().requires_grad_()) \
+                                for n, param in model.named_parameters()]
+        elif args.optimize_on_cpu:
+            param_optimizer = [(n, param.clone().detach().to('cpu').requires_grad_()) \
+                                for n, param in model.named_parameters()]
+        else:
+            param_optimizer = list(model.named_parameters())
+        no_decay = ['bias', 'gamma', 'beta']
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.01},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay_rate': 0.0}
+            ]
+        optimizer = BertAdam(optimizer_grouped_parameters,
+                             lr=args.learning_rate,
+                             warmup=args.warmup_proportion,
+                             t_total=num_train_steps)
 
     global_step = 0
     train_loss=100000
