@@ -7,6 +7,8 @@ This repo hosts pretraining and finetuning weights and relevant scripts for Clin
 
 2. Detailed Step Instructions for pretraining ClinicalBERT and Clinical XLNet from scratch are available [here](https://github.com/kexinhuang12345/clinicalBERT/blob/master/notebook/pretrain.ipynb)
 
+3. The predictive performance result is updated in this [version](https://www.kexinhuang.com/s/main.pdf) using the correct pretraining test splitting method described in pretraining script above. For more clinical outcomes performance comparison with more baselines using the correct split for ClinicalBERT/XLNet, please see the [Clinical XLNet](https://arxiv.org/abs/1912.11975) paper.
+
 ## Installation and Requirements
 
 ```
