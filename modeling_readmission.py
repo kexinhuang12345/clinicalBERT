@@ -873,7 +873,7 @@ class BertForSequenceClassification(PreTrainedBertModel):
             loss_fct = BCELoss()
             m = nn.Sigmoid()
             n = torch.squeeze(m(logits))
-            loss = loss_fct(n, labels.float())
+            loss = loss_fct(n.reshape(-1,1), labels.float().reshape(-1,1))
             return loss, logits
         else:
             return logits
