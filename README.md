@@ -38,7 +38,7 @@ Data file is expected to have column "TEXT", "ID" and "Label" (Note chunks, Admi
 
 
 ## ClinicalBERT Weights
-Use [this google link](https://drive.google.com/file/d/1X3WrKLwwRAVOaAfKQ_tkTi46gsPfY5EB) for users in mainland China to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
+Use [this google link](https://drive.google.com/file/d/1X3WrKLwwRAVOaAfKQ_tkTi46gsPfY5EB) to download pretrained ClinicalBERT along with the readmission task fine-tuned model weights.
 
 The following scripts presume a model folder that has following structure:
 ```
@@ -115,7 +115,7 @@ We provide [script](./preprocess.py) for preprocessing clinical notes and merge 
 
 ## Gensim Word2Vec and FastText models
 
-Please use [this link](https://hu-my.sharepoint.com/:u:/g/personal/kexinhuang_hsph_harvard_edu/EcdVZ46f9OZPnFlnFD3jXZgBayNW7T7SrA0lPRf6dlSOzQ?e=sPHF8B) to download Word2Vec and FastText models for Clinical Notes.
+Please use [this link](https://drive.google.com/file/d/14EOqvvjJ8qUxihQ_SFnuRsjK9pOTrP-6/view?usp=sharing) to download Word2Vec and FastText models for Clinical Notes.
 
 To use, simply 
 
